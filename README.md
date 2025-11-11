@@ -86,7 +86,7 @@ An **R-based HEI-2020 pipeline** for NHANES 2017–2018.
 ## R Implementation
 
 ```r
-# Run the HEI-2020 workflow
+# Run the HEI-2020 workflow (for NHANES 2017–2018 data only)
 source("HEI2020.R")
 
 # Extract total HEI-2020 scores per participant
@@ -112,4 +112,5 @@ print(HEI_total)
 
 write.csv(HEI_total, "hei2020_total_scores.csv", row.names = FALSE)
 ```
-
+💾 Note: Before running the script, download the FPED .sas7bdat files (fped_dr1tot_1718.sas7bdat, fped_dr2tot_1718.sas7bdat) from this repository
+ (or the USDA FPED site) and place them in your local folder (e.g., ~/Documents/HEI/).
