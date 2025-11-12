@@ -48,24 +48,19 @@ The **Healthy Eating Index (HEI)**, developed by the **U.S. Department of Agricu
 # Available Options to Compute HEI-2020 Scores
 
 ## Option 1 — Official SAS Macro
-**Source:**  
+
+**Sources**  
 - [NCI HEI Scoring SAS Macros (official site)](https://epi.grants.cancer.gov/hei/sas-code.html)  
-- [Direct download: HEI-2020 Scoring Macro (ZIP)](https://epi.grants.cancer.gov/hei/hei2020-score-macro.zip)
+- [Direct download: HEI-2020 Scoring Macro (ZIP)](https://epi.grants.cancer.gov/hei/hei2020-score-macro.zip)  
+- [HEI-2020 Scoring Method Documentation](https://epi.grants.cancer.gov/hei/hei-scoring-method.html)
 
-The official NCI SAS macro implements the full HEI-2020 scoring algorithm and can be used with any NHANES cycle.  
-Each NHANES cycle **must be paired with its corresponding FPED dataset** (Food Patterns Equivalents Database), because food codes and mappings differ between cycles.
+Each NHANES cycle must be paired with its **corresponding FPED (Food Patterns Equivalents Database)**, as food codes and variable definitions differ across cycles.
 
-### 🔗 NHANES–FPED Pairings
+**Important Note**  
+The NCI HEI-2020 SAS Macro was developed and validated for **NHANES 2017–2018** only.  
+While the HEI-2020 algorithm can theoretically be applied to earlier NHANES waves, the official macro itself is **not guaranteed to work correctly** with older FPED structures (e.g., 2013–2014 or 2011–2012).  
 
-| NHANES Cycle | Matching FPED Version | Common File Names |
-|---------------|----------------------|-------------------|
-| 2017–2018 | FPED 2017–2018 | `fped_dr1tot_1718.sas7bdat`, `fped_dr2tot_1718.sas7bdat` |
-| 2015–2016 | FPED 2015–2016 | `fped_dr1tot_1516.sas7bdat`, `fped_dr2tot_1516.sas7bdat` |
-| 2013–2014 | FPED 2013–2014 | `fped_dr1tot_1314.sas7bdat`, `fped_dr2tot_1314.sas7bdat` |
-| 2011–2012 | FPED 2011–2012 | `fped_dr1tot_1112.sas7bdat`, `fped_dr2tot_1112.sas7bdat` |
-
-
-*For details on the HEI-2020 scoring method, see the [HEI-2020 Documentation](https://epi.grants.cancer.gov/hei/hei-scoring-method.html).*
+For cycle-specific and reproducible HEI computation across all available NHANES–FPED pairs, see **Option 3** below.
 
 ---
 
@@ -80,49 +75,80 @@ Each NHANES cycle **must be paired with its corresponding FPED dataset** (Food P
 **Cons:** Outdated; not compatible with HEI-2020 or FPED 2017+; cannot handle missing recall days.
 
 ---
-
 ## Option 3 — `hei2020.R` (under development in this repo)
-An **R-based HEI-2020 pipeline** for NHANES 2017–2018.
+
+This option provides an R-based function to compute **HEI-2020** scores directly from NHANES and FPED files.
+
+### How It Works
+You specify the desired NHANES wave (for example, `"1314"` for 2013–2014).  
+The function automatically locates and harmonizes the corresponding FPED files, computes the 13 HEI-2020 components, and outputs per-person scores.
 
 ### Key Features
-- Uses **FPED 2017–2018** (Day 1 & Day 2 totals).  
-- Implements **HEI-2020** scoring logic (13 components per 1,000 kcal).  
-- Replicates NCI’s official SAS macro entirely in **R** using `haven` and `dplyr`.  
-- Computes 13 component scores and the total HEI score (0–100).  
-- Automatically averages across recall days if two reliable days are available, or uses one day when only a single recall is valid.  
-- Adjusts for **added sugars conversion**:  
+- Implements the **HEI-2020** scoring system (13 components per 1,000 kcal).  
+- Automatically averages across recall days when two reliable recalls are available, or uses a single day if only one is valid.  
+- Corrects **added sugars conversion**:  
   - In FPED, `ADD_SUGARS` is expressed in **teaspoon-equivalents (tsp-eq)** — *not* grams or kilocalories.  
-  - HEI-2020 requires **percent of total energy from added sugars**, so tsp-eq values are converted to kcal.  
-  - The **official SAS macro** uses a rounded factor of **16 kcal per tsp**, while this `hei2020.R` script applies the **chemically accurate conversion** of **16.8 kcal per tsp** (4.2 g × 4 kcal/g) for greater precision.
+  - HEI-2020 requires the **percent of total energy from added sugars**, so tsp-eq values are converted to kilocalories.  
+  - The official SAS macro uses a rounded conversion of **16 kcal per tsp**, while this R implementation applies the more accurate **16.8 kcal per tsp** (4.2 g × 4 kcal/g) for improved precision.
+
+### Requirements
+- Matching **FPED `.sas7bdat` files** for the selected NHANES cycle.  
+- A local R environment with the `dplyr` and `haven` packages installed.  
+
+
+
+### Available FPED Versions
+
+The following FPED datasets correspond to their NHANES cycles and file names:
+
+| NHANES Wave | FPED Version | FPED Day 1 File | FPED Day 2 File |
+|--------------|---------------|----------------|----------------|
+| 2017–March 2020 Pandemic | FPED 2017–2018 | `fped_dr1tot_1718.sas7bdat` | `fped_dr2tot_1718.sas7bdat` |
+| 2017–2018 | FPED 2017–2018 | `fped_dr1tot_1718.sas7bdat` | `fped_dr2tot_1718.sas7bdat` |
+| 2015–2016 | FPED 2015–2016 | `fped_dr1tot_1516.sas7bdat` | `fped_dr2tot_1516.sas7bdat` |
+| 2013–2014 | FPED 2013–2014 | `fped_dr1tot_1314.sas7bdat` | `fped_dr2tot_1314.sas7bdat` |
+| 2011–2012 | FPED 2011–2012 | `fped_dr1tot_1112.sas7bdat` | `fped_dr2tot_1112.sas7bdat` |
+| 2009–2010 | FPED 2009–2010 | `fped_dr1tot_0910.sas7bdat` | `fped_dr2tot_0910.sas7bdat` |
+| 2007–2008 | FPED 2007–2008 | `fped_dr1tot_0708.sas7bdat` | `fped_dr2tot_0708.sas7bdat` |
+| 2005–2006 | FPED 2005–2006 | `fped_dr1tot_0506.sas7bdat` | `fped_dr2tot_0506.sas7bdat` |
+
+All FPED files are available from the  
+[USDA ARS Food Patterns Equivalents Database (FPED)](https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fped-databases/)
+
+
 
 ## R Implementation
 
 ```r
-# Run the HEI-2020 workflow (for NHANES 2017–2018 data only)
-source("HEI2020.R")
+source("hei2020.R")
 
-# Extract total HEI-2020 scores per participant
-HEI_total <- HEI2020 %>%
-  dplyr::select(SEQN, HEI2020_TOTAL_SCORE)
+# Compute HEI-2020 scores for NHANES 2017–2018
+hei_1718 <- compute_hei2020(
+  cycle = "1718",
+  base_dir = "~/Documents/HEI",
+  cache_rds = TRUE
+)
 
-# View results
-print(HEI_total)
+# Extract only SEQN and total score
+hei_total_1718 <- hei_1718 %>%
+  select(SEQN, HEI2020_TOTAL_SCORE)
 
+# Print results
+print(hei_total_1718)
+
+# Example output
 # A tibble: 7,125 × 2
-    SEQN HEI2020_TOTAL_SCORE
-   <dbl>               <dbl>
- 1 93704                58.8
- 2 93705                44.5
- 3 93706                42.7
- 4 93707                34.8
- 5 93708                48.4
- 6 93711                63.5
- 7 93712                49.8
- 8 93713                45.8
- 9 93714                37.1
-10 93715                27.1
-
-write.csv(HEI_total, "hei2020_total_scores.csv", row.names = FALSE)
+#     SEQN HEI2020_TOTAL_SCORE
+#    <dbl>               <dbl>
+#  1 93704                58.4
+#  2 93705                44.0
+#  3 93706                42.7
+#  4 93707                34.3
+#  5 93708                48.2
+#  6 93711                63.2
+#  7 93712                49.4
+#  8 93713                45.3
+#  9 93714                36.9
+# 10 93715                26.4
+#  ! 7,115 more rows
 ```
-💾 Note: Before running the script, download the FPED .sas7bdat files (fped_dr1tot_1718.sas7bdat, fped_dr2tot_1718.sas7bdat) from this repository
- (or the USDA FPED site) and place them in your local folder (e.g., ~/Documents/HEI/).
