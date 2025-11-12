@@ -45,15 +45,27 @@ The **Healthy Eating Index (HEI)**, developed by the **U.S. Department of Agricu
 
 ---
 
-# Available Options to Compute HEI Scores
+# Available Options to Compute HEI-2020 Scores
 
-## Option 1 — SAS Macro (Official)
-**Source:** [NCI HEI SAS Macros](https://epi.grants.cancer.gov/hei/sas-code.html)
+## Option 1 — Official SAS Macro
+**Source:**  
+- [NCI HEI Scoring SAS Macros (official site)](https://epi.grants.cancer.gov/hei/sas-code.html)  
+- [Direct download: HEI-2020 Scoring Macro (ZIP)](https://epi.grants.cancer.gov/hei/hei2020-score-macro.zip)
 
-- Requires matching **FPED** `.sas7bdat` files for each NHANES cycle.  
+The official NCI SAS macro implements the full HEI-2020 scoring algorithm and can be used with any NHANES cycle.  
+Each NHANES cycle **must be paired with its corresponding FPED dataset** (Food Patterns Equivalents Database), because food codes and mappings differ between cycles.
 
-**Pros:** Official, validated by USDA/NCI  
-**Cons:** SAS-only; requires local extraction of FPED data
+### 🔗 NHANES–FPED Pairings
+
+| NHANES Cycle | Matching FPED Version | Common File Names |
+|---------------|----------------------|-------------------|
+| 2017–2018 | FPED 2017–2018 | `fped_dr1tot_1718.sas7bdat`, `fped_dr2tot_1718.sas7bdat` |
+| 2015–2016 | FPED 2015–2016 | `fped_dr1tot_1516.sas7bdat`, `fped_dr2tot_1516.sas7bdat` |
+| 2013–2014 | FPED 2013–2014 | `fped_dr1tot_1314.sas7bdat`, `fped_dr2tot_1314.sas7bdat` |
+| 2011–2012 | FPED 2011–2012 | `fped_dr1tot_1112.sas7bdat`, `fped_dr2tot_1112.sas7bdat` |
+
+
+*For details on the HEI-2020 scoring method, see the [HEI-2020 Documentation](https://epi.grants.cancer.gov/hei/hei-scoring-method.html).*
 
 ---
 
