@@ -148,4 +148,4 @@ If you use this HEI-2020 implementation in your work, please cite:
 - The original `heiscore` R package (for dataset preprocessing and reference implementation).
 - This repository for the extended HEI-2020 scoring that includes one-day recalls:
 
-> Hong (2025). HEI-2020 scoring with single-recall support (version 0.0,1). GitHub. DOI: 10.5281/zenodo.17596091
+> Hong (2025). HEI-2020 scoring with expanded NHANES recall coverage (version 1.0.0). GitHub. [https://doi.org/10.5281/zenodo.17596091](https://doi.org/10.5281/zenodo.17596091)
