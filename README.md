@@ -62,9 +62,7 @@ While the HEI-2020 algorithm can theoretically be applied to earlier NHANES wave
 
 For cycle-specific and reproducible HEI computation across all available NHANES–FPED pairs, see **Option 3** below.
 
----
-
-## Option 2 — `hei` R Package
+<!-- ## Option 2 — `hei` R Package
 - Based on **HEI-2005** methodology.  
 - Designed for **NHANES 2005–2014** cycles, which correspond to FPED releases from 2005–2006 through 2013–2014.  
 - **Assumes consistent FPED variable structure across waves** — however, in reality, FPED variable names, available components, and unit definitions (e.g., cup-equivalents vs gram-equivalents, or how legumes and solid fats are classified) have evolved slightly across releases.  
@@ -72,10 +70,10 @@ For cycle-specific and reproducible HEI computation across all available NHANES�
 - The package does **not  adapt** to these FPED updates, so analysts should manually verify that variable names in their FPED dataset match the expected ones in the code before running HEI calculations.
 
 **Pros:** Easy for older datasets.  
-**Cons:** Outdated; not compatible with HEI-2020 or FPED 2017+; cannot handle missing recall days.
+**Cons:** Outdated; not compatible with HEI-2020 or FPED 2017+; cannot handle missing recall days. --> 
 
 ---
-## Option 3 — `hei2020.R` (under development in this repo)
+## Option 2 — `hei2020.R` (under development in this repo)
 
 This option provides an R-based function to compute **HEI-2020** scores directly from NHANES and FPED files.
 
