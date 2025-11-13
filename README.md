@@ -141,3 +141,11 @@ SEQN only in hei2020 (1-day extra):   1314
 9  93803      38.50167             NA
 10 93804      65.52974             NA
 ```
+## Citation
+
+If you use this HEI-2020 implementation in your work, please cite:
+
+- The original `heiscore` R package (for dataset preprocessing and reference implementation).
+- This repository for the extended HEI-2020 scoring that includes one-day recalls:
+
+> Hong (2025). HEI-2020 scoring with single-recall support (version 0.0,1). GitHub. DOI: [link]
