@@ -41,7 +41,6 @@ The **Healthy Eating Index (HEI)**, developed by the **U.S. Department of Agricu
 - **Solution:** FPED decomposes each food into 37 standardized USDA components.  
 - **Why it matters:** HEI cannot be calculated directly from recall data; FPED provides the link between raw foods and HEI scoring.
 
-> **FPED = the translator** between NHANES recall data and HEI scoring.
 
 ---
 
@@ -60,7 +59,12 @@ Each NHANES cycle must be paired with its **corresponding FPED (Food Patterns Eq
 The NCI HEI-2020 SAS Macro was developed and validated for **NHANES 2017–2018** only.  
 While the HEI-2020 algorithm can theoretically be applied to earlier NHANES waves, the official macro itself is **not guaranteed to work correctly** with older FPED structures (e.g., 2013–2014 or 2011–2012).  
 
-For cycle-specific and reproducible HEI computation across all available NHANES–FPED pairs, see **Option 3** below.
+For cycle-specific and reproducible HEI computation across all available NHANES–FPED pairs, see **Option 2** below.
+
+
+All FPED files are available from the  
+[USDA ARS Food Patterns Equivalents Database (FPED)](https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fped-databases/)
+
 
 <!-- ## Option 2 — `hei` R Package
 - Based on **HEI-2005** methodology.  
@@ -73,80 +77,67 @@ For cycle-specific and reproducible HEI computation across all available NHANES�
 **Cons:** Outdated; not compatible with HEI-2020 or FPED 2017+; cannot handle missing recall days. --> 
 
 ---
-## Option 2 — `hei2020.R` (under development in this repo)
+## Option 2 — `hei2020.R`
 
-This option provides an R-based function to compute **HEI-2020** scores directly from NHANES and FPED files.
+This code provides an `R` function for computing **HEI-2020** scores.
 
-### How It Works
-You specify the desired NHANES wave (for example, `"1314"` for 2013–2014).  
-The function automatically locates and harmonizes the corresponding FPED files, computes the 13 HEI-2020 components, and outputs per-person scores.
-
-### Key Features
-- Implements the **HEI-2020** scoring system (13 components per 1,000 kcal).  
-- Automatically averages across recall days when two reliable recalls are available, or uses a single day if only one is valid.  
-- Corrects **added sugars conversion**:  
-  - In FPED, `ADD_SUGARS` is expressed in **teaspoon-equivalents (tsp-eq)** — *not* grams or kilocalories.  
-  - HEI-2020 requires the **percent of total energy from added sugars**, so tsp-eq values are converted to kilocalories.  
-  - The official SAS macro uses a rounded conversion of **16 kcal per tsp**, while this R implementation applies the more accurate **16.8 kcal per tsp** (4.2 g × 4 kcal/g) for improved precision.
-
-### Requirements
-- Matching **FPED `.sas7bdat` files** for the selected NHANES cycle.  
-- A local R environment with the `dplyr` and `haven` packages installed.  
-
-
-
-### Available FPED Versions
-
-The following FPED datasets correspond to their NHANES cycles and file names:
-
-| NHANES Wave | FPED Version | FPED Day 1 File | FPED Day 2 File |
-|--------------|---------------|----------------|----------------|
-| 2017–March 2020 Pandemic | FPED 2017–2018 | `fped_dr1tot_1718.sas7bdat` | `fped_dr2tot_1718.sas7bdat` |
-| 2017–2018 | FPED 2017–2018 | `fped_dr1tot_1718.sas7bdat` | `fped_dr2tot_1718.sas7bdat` |
-| 2015–2016 | FPED 2015–2016 | `fped_dr1tot_1516.sas7bdat` | `fped_dr2tot_1516.sas7bdat` |
-| 2013–2014 | FPED 2013–2014 | `fped_dr1tot_1314.sas7bdat` | `fped_dr2tot_1314.sas7bdat` |
-| 2011–2012 | FPED 2011–2012 | `fped_dr1tot_1112.sas7bdat` | `fped_dr2tot_1112.sas7bdat` |
-| 2009–2010 | FPED 2009–2010 | `fped_dr1tot_0910.sas7bdat` | `fped_dr2tot_0910.sas7bdat` |
-| 2007–2008 | FPED 2007–2008 | `fped_dr1tot_0708.sas7bdat` | `fped_dr2tot_0708.sas7bdat` |
-| 2005–2006 | FPED 2005–2006 | `fped_dr1tot_0506.sas7bdat` | `fped_dr2tot_0506.sas7bdat` |
-
-All FPED files are available from the  
-[USDA ARS Food Patterns Equivalents Database (FPED)](https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fped-databases/)
-
+It builds on the functionality of the `heiscore` package but extends it by also
+scoring participants who have **only one** valid dietary recall (Day 1 *or* Day 2).
 
 
 ## R Implementation
 
 ```r
 source("hei2020.R")
+hei <- compute_hei2020_anyday("1718")
 
-# Compute HEI-2020 scores for NHANES 2017–2018
-hei_1718 <- compute_hei2020(
-  cycle = "1718",
-  base_dir = "~/Documents/HEI",
-  cache_rds = TRUE
-)
+dim(hei)         # number of people who have >=1 day AND all components non-missing
+head(hei)
 
-# Extract only SEQN and total score
-hei_total_1718 <- hei_1718 %>%
-  select(SEQN, HEI2020_TOTAL_SCORE)
+# Just SEQN + total score if you want:
+hei_total <- hei %>% select(SEQN, HEI2020_TOTAL_SCORE)
+head(hei_total)
 
-# Print results
-print(hei_total_1718)
+> # Just SEQN + total score if you want:
+> hei_total <- hei %>% select(SEQN, HEI2020_TOTAL_SCORE)
+> head(hei_total)
+   SEQN HEI2020_TOTAL_SCORE
+1 93704            65.76993
+2 93705            44.50729
+3 93706            44.48747
+4 93707            41.31504
+5 93708            52.74016
+6 93710            58.86168
 
-# Example output
-# A tibble: 7,125 × 2
-#     SEQN HEI2020_TOTAL_SCORE
-#    <dbl>               <dbl>
-#  1 93704                58.4
-#  2 93705                44.0
-#  3 93706                42.7
-#  4 93707                34.3
-#  5 93708                48.2
-#  6 93711                63.2
-#  7 93712                49.4
-#  8 93713                45.3
-#  9 93714                36.9
-# 10 93715                26.4
-#  ! 7,115 more rows
+> compare_heiscore_vs_hei2020("1718")
+Total SEQN in hei2020 output:         7494 
+Total SEQN in heiscore output:        6180 
+Common SEQN (both):                   6180 
+SEQN only in hei2020 (1-day extra):   1314 
+
+=== COMMON SUBJECTS (first 10) ===
+    SEQN hei2020_total heiscore_total
+1  93704      65.76993       65.76993
+2  93705      44.50729       44.50729
+3  93707      41.31504       41.31504
+4  93708      52.74016       52.74016
+5  93711      71.30719       71.30719
+6  93712      50.15362       50.15362
+7  93713      54.62052       54.62052
+8  93714      37.11114       37.11114
+9  93715      31.46482       31.46482
+10 93716      63.00828       63.00828
+
+=== IN hei2020 ONLY (first 10) ===
+    SEQN hei2020_total heiscore_total
+1  93706      44.48747             NA
+2  93710      58.86168             NA
+3  93720      69.40862             NA
+4  93748      36.45583             NA
+5  93761      60.91797             NA
+6  93764      66.23787             NA
+7  93765      36.65384             NA
+8  93768      60.83761             NA
+9  93803      38.50167             NA
+10 93804      65.52974             NA
 ```
