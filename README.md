@@ -107,7 +107,8 @@ head(hei_total)
 4 93707            41.31504
 5 93708            52.74016
 6 93710            58.86168
-
+```
+<!--
 > compare_heiscore_vs_hei2020("1718")
 Total SEQN in hei2020 output:         7494 
 Total SEQN in heiscore output:        6180 
@@ -139,7 +140,8 @@ SEQN only in hei2020 (1-day extra):   1314
 8  93768      60.83761             NA
 9  93803      38.50167             NA
 10 93804      65.52974             NA
-```
+--->
+
 ## Citation
 
 If you use this HEI-2020 implementation in your work, please cite:
