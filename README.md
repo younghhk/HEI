@@ -88,7 +88,10 @@ scoring participants who have **only one** valid dietary recall (Day 1 *or* Day 
 
 ```r
 source("hei2020.R")
-hei <- compute_hei2020_anyday("1718")
+hei <- compute_hei2020_anyday("1112") # 2011–2012
+hei <- compute_hei2020_anyday("1314") # 2013-2014
+hei <- compute_hei2020_anyday("1516") # 2015–2016
+hei <- compute_hei2020_anyday("1718") # 2017–2018
 
 dim(hei)         # number of people who have >=1 day AND all components non-missing
 head(hei)
